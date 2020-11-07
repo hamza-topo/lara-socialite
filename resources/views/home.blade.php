@@ -9,12 +9,23 @@
 
                 <div class="card-body">
                     @if (session('status'))
-                        <div class="alert alert-success" role="alert">
-                            {{ session('status') }}
-                        </div>
+                    <div class="alert alert-success" role="alert">
+                        {{ session('status') }}
+                    </div>
                     @endif
+                    <div class="card">
+                        <div class="card-header" style="align-items: left;">
+                            <div class="row">
+                                <img src="{{Session::get('avatar')}}" width="25" height="25" style="border-radius: 50%;">
+                                 |    {{auth()->user()->name}}
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            You are logged In
+                        </div>
+                    </div>
 
-                    You are logged in!
+
                 </div>
             </div>
         </div>

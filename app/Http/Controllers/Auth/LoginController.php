@@ -5,7 +5,10 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
-
+use App\User;
+use Socialite;
+use Auth;
+use Hash;
 class LoginController extends Controller
 {
     /*
@@ -37,4 +40,43 @@ class LoginController extends Controller
     {
         $this->middleware('guest')->except('logout');
     }
+
+    /**
+     * Redirect the user to the facebook authentication page.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function redirectToProvider()
+    {
+        return Socialite::driver('facebook')->redirect();
+    }
+
+ /**
+     * Obtain the user information from facebook.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function handleProviderCallback()
+    {
+        $user_provider   =   Socialite::driver('facebook')->user();
+       // dd($user_provider,$user_provider->getAvatar());
+        
+        $user  =   User::where(['email' => $user_provider->getEmail()])->first();
+
+        if($user){
+            Auth::login($user);
+            return redirect('/');
+        }
+        $user = User::create([
+            'name'          => $user_provider->getName(),
+            'password'      => Hash::make($user_provider->getName()),
+            'email'         => $user_provider->getEmail(),
+            //'avatar'        => $user_provider->getAvatar(),
+        ]);
+
+        Auth::login($user);
+        return redirect()->route('home');
+    }
+        // $user->token;
 }
+
